@@ -4,21 +4,33 @@ interface ColorFormatSelectorProps {
   value: ColorFormat;
   onChange: (format: ColorFormat) => void;
   options?: typeof COLOR_FORMAT_OPTIONS;
+  className?: string;
+  label?: string;
+  id?: string;
 }
 
 const ColorFormatSelector = ({
   value,
   onChange,
   options = COLOR_FORMAT_OPTIONS,
+  className,
+  label = 'Color Output Format',
+  id = 'color-format',
 }: ColorFormatSelectorProps) => {
+  const selectedOption = options.find((option) => option.value === value);
+
+  const containerClassName = ['flex flex-col gap-2 text-gray-300', className]
+    .filter(Boolean)
+    .join(' ');
+
   return (
-    <div className="flex flex-col gap-1 text-gray-300">
-      <label className="text-sm font-medium text-gray-400" htmlFor="color-format">
-        Color format
+    <div className={containerClassName}>
+      <label className="text-sm font-medium text-gray-200" htmlFor={id}>
+        {label}
       </label>
       <select
-        id="color-format"
-        className="bg-[#111] border border-gray-700 rounded px-2 py-1 text-sm focus:outline-none focus:border-gray-500"
+        id={id}
+        className="rounded-lg border border-[#1f2937] bg-[#151b29] px-3 py-2 text-sm text-gray-200 outline-none transition focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
         value={value}
         onChange={(event) => onChange(event.target.value as ColorFormat)}
       >
@@ -28,9 +40,9 @@ const ColorFormatSelector = ({
           </option>
         ))}
       </select>
-      <p className="text-xs text-gray-500">
-        {options.find((option) => option.value === value)?.description}
-      </p>
+      {selectedOption?.description ? (
+        <p className="text-xs text-gray-500">{selectedOption.description}</p>
+      ) : null}
     </div>
   );
 };
