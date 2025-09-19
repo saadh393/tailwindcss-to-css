@@ -159,7 +159,7 @@ export default function App() {
             <span className="tracking-wide">TailwindCSS to CSS</span>
           </div>
           <div className="flex items-center gap-3">
-            <GitHubButton type="stargazers" namespace="Devzstudio" repo="tailwind_to_css" />
+            <GitHubButton type="stargazers" namespace="saadh393" repo="tailwindcss-to-css" />
           </div>
         </div>
       </nav>
