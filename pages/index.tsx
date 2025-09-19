@@ -1,13 +1,19 @@
 import { ClipboardCopyIcon } from "@heroicons/react/outline";
 import Head from "next/head";
 import Image from "next/image";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { CopyToClipboard } from "react-copy-to-clipboard";
 import GitHubButton from "react-github-button";
 import { toast } from "sonner";
+import CodePreview from "../components/CodePreview";
 import ColorFormatSelector from "../components/ColorFormatSelector";
-import { DEFAULT_COLOR_FORMAT, type ColorFormat } from "../libs/conversion";
+import { COLOR_FORMATS, DEFAULT_COLOR_FORMAT, type ColorFormat } from "../libs/conversion";
 import Logo from "../public/logo.svg";
+
+const STORAGE_KEYS = {
+  colorFormat: "ttcss:color-format",
+  className: "ttcss:class-name",
+};
 
 export default function App() {
   const [input, setInput] = useState("");
@@ -17,8 +23,60 @@ export default function App() {
   const [defaultClassName, setDefaultClassName] = useState("");
   const [isConverting, setIsConverting] = useState(false);
   const [manualTrigger, setManualTrigger] = useState(0);
+  const prefsLoadedRef = useRef(false);
 
   const trimmedClassName = useMemo(() => defaultClassName.trim() || undefined, [defaultClassName]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
+    try {
+      const storedFormat = window.localStorage.getItem(STORAGE_KEYS.colorFormat);
+      if (storedFormat && (COLOR_FORMATS as readonly string[]).includes(storedFormat)) {
+        setColorFormat(storedFormat as ColorFormat);
+      }
+
+      const storedClassName = window.localStorage.getItem(STORAGE_KEYS.className);
+      if (storedClassName) {
+        setDefaultClassName(storedClassName);
+      }
+    } catch (error) {
+      console.error("Failed to read saved preferences", error);
+    } finally {
+      prefsLoadedRef.current = true;
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!prefsLoadedRef.current || typeof window === "undefined") {
+      return;
+    }
+
+    try {
+      window.localStorage.setItem(STORAGE_KEYS.colorFormat, colorFormat);
+    } catch (error) {
+      console.error("Failed to persist color format", error);
+    }
+  }, [colorFormat]);
+
+  useEffect(() => {
+    if (!prefsLoadedRef.current || typeof window === "undefined") {
+      return;
+    }
+
+    try {
+      const trimmed = defaultClassName.trim();
+      if (trimmed) {
+        window.localStorage.setItem(STORAGE_KEYS.className, trimmed);
+      } else {
+        window.localStorage.removeItem(STORAGE_KEYS.className);
+      }
+    } catch (error) {
+      console.error("Failed to persist default class name", error);
+    }
+  }, [defaultClassName]);
 
   useEffect(() => {
     const trimmedInput = input.trim();
@@ -133,13 +191,13 @@ export default function App() {
               CSS Output
             </label>
             <div className="relative">
-              <textarea
+              <CodePreview
                 id="css-output"
-                className="min-h-[260px] w-full resize-y rounded-xl border border-[#1f2937] bg-[#101827] px-4 py-3 text-sm text-gray-200 outline-none"
-                placeholder=".your-class { ... }"
                 value={result}
-                readOnly
-              ></textarea>
+                language="css"
+                className="h-full w-full"
+                placeholder=".yourClass { /* styles will appear here */ }"
+              />
               <CopyToClipboard text={result} onCopy={() => toast.success("Copied!")}>
                 <button
                   type="button"

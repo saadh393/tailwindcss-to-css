@@ -146,10 +146,12 @@
 ::-webkit-scrollbar {
   background-color: transparent;
   width: 4px;
+  height: 5px;
   appearance: none;
 }
 ::-webkit-scrollbar-thumb {
   width: 5px;
+  height: 5px;
   border-radius: 20px;
   background-color: gray;
 }

@@ -13,6 +13,7 @@
     "culori": "^4.0.2",
     "next": "13.4.9",
     "postcss-js": "^4.0.1",
+    "prism-react-renderer": "^2.4.1",
     "react": "18.1.0",
     "react-copy-to-clipboard": "^5.1.0",
     "react-dom": "18.1.0",
