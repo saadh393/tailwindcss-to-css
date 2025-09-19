@@ -5,7 +5,8 @@ import { useEffect, useState } from 'react';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import GitHubButton from 'react-github-button';
 import { toast } from 'sonner';
-import { convertFromCssToJss, getConvertedClasses } from '../libs/helpers';
+import ColorFormatSelector from '../components/ColorFormatSelector';
+import { DEFAULT_COLOR_FORMAT, type ColorFormat } from '../libs/conversion';
 import CodeKeep from '../public/CodeKeep.svg';
 import Logo from '../public/logo.svg';
 
@@ -13,15 +14,54 @@ export default function App() {
 	const [input, setInput] = useState('');
 
 	const [result, setResult] = useState('');
-
-	const [resultJSS, setResultJSS] = useState('');
+	const [colorFormat, setColorFormat] = useState<ColorFormat>(DEFAULT_COLOR_FORMAT);
 
 	useEffect(() => {
-		const resultCss = getConvertedClasses(input);
-		const resultJSS = convertFromCssToJss(resultCss);
-		setResult(resultCss);
-		setResultJSS(resultJSS);
-	}, [input]);
+		const trimmedInput = input.trim();
+		if (!trimmedInput) {
+			setResult('');
+			return;
+		}
+
+		const controller = new AbortController();
+
+		const convert = async () => {
+			try {
+				const response = await fetch('/api/convert', {
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+					},
+					body: JSON.stringify({
+						input: trimmedInput,
+						colorFormat,
+					}),
+					signal: controller.signal,
+				});
+
+				if (!response.ok) {
+					throw new Error('Failed to convert input');
+				}
+
+				const data: { css?: string } = await response.json();
+				setResult(data.css ?? '');
+			} catch (error) {
+				if (controller.signal.aborted) {
+					return;
+				}
+
+				console.error('Conversion error', error);
+				setResult('');
+				toast.error('Unable to convert classes');
+			}
+		};
+
+		convert();
+
+		return () => {
+			controller.abort();
+		};
+	}, [input, colorFormat]);
 
 	return (
 		<main>
@@ -63,6 +103,12 @@ export default function App() {
 				</header>
 			</nav>
 
+			<section className="bg-gray-900 border-b border-gray-800">
+				<div className="px-3 py-2 md:px-4 md:py-3 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+					<ColorFormatSelector value={colorFormat} onChange={setColorFormat} />
+				</div>
+			</section>
+
 			<section className="flex flex-col-reverse md:flex-row bg-gray-900 h-screen ">
 				<textarea
 					className="w-full resize-none  border-none flex-grow p-3 bg-[#111] text-gray-300  outline-none "
@@ -85,18 +131,6 @@ export default function App() {
 					</CopyToClipboard>
 				</div>
 
-				{/* JSS */}
-				<div className="flex w-full bg-[#111] border-l border-gray-700">
-					<textarea
-						className="w-full resize-none flex-grow p-3 bg-[#111] text-gray-300 outline-none"
-						placeholder="JSS (beta)"
-						value={resultJSS}
-						readOnly
-					></textarea>
-					<CopyToClipboard text={resultJSS} onCopy={() => toast.success('Copied!')}>
-						<ClipboardCopyIcon className="w-6 h-6 mt-3 text-gray-500 cursor-pointer md:mr-1" />
-					</CopyToClipboard>
-				</div>
 			</section>
 		</main>
 	);
