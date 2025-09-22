@@ -150,6 +150,7 @@ export default function App() {
         <title>Tailwind To CSS</title>
         <meta name="description" content="Tailwind To CSS" />
         <link rel="icon" href="/logo.svg" />
+        <meta name="google-site-verification" content="0AF5grfAZJ4fXWWuM-nyXMHJh1hHSn5Mv2__fgIbUwU" />
       </Head>
 
       <nav className="border-b border-[#151b29] bg-[#111826]">
