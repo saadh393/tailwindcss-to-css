@@ -147,8 +147,30 @@ export default function App() {
   return (
     <main className="min-h-screen bg-[#0b1220] text-gray-200">
       <Head>
-        <title>Tailwind To CSS</title>
-        <meta name="description" content="Tailwind To CSS" />
+        <title>TailwindCSS to CSS Converter – Clean CSS from Tailwind Classes</title>
+        <meta name="title" content="TailwindCSS to CSS Converter – Clean CSS from Tailwind Classes" />
+        <meta
+          name="description"
+          content="Convert TailwindCSS utility classes into clean, responsive, and syntax-highlighted CSS instantly. Supports breakpoints, pseudo-classes, custom selectors, and color conversions."
+        />
+
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://tailwindcss-to-css.vercel.app/" />
+        <meta property="og:title" content="TailwindCSS to CSS Converter" />
+        <meta
+          property="og:description"
+          content="A modern TailwindCSS to CSS converter with real Tailwind output, responsive + pseudo support, color conversions, and polished dark UI."
+        />
+        <meta property="og:image" content="https://tailwindcss-to-css.vercel.app/preview.png" />
+
+        <meta property="twitter:url" content="https://tailwindcss-to-css.vercel.app/" />
+        <meta property="twitter:title" content="TailwindCSS to CSS Converter" />
+        <meta
+          property="twitter:description"
+          content="Convert Tailwind utility strings into clean, production-ready CSS instantly."
+        />
+        <meta property="twitter:image" content="https://tailwindcss-to-css.vercel.app/preview.png" />
+
         <link rel="icon" href="/logo.svg" />
         <meta name="google-site-verification" content="0AF5grfAZJ4fXWWuM-nyXMHJh1hHSn5Mv2__fgIbUwU" />
       </Head>
